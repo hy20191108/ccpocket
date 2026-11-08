@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../models/machine.dart';
 import '../../../providers/machine_manager_cubit.dart';
 import '../../../services/bridge_service.dart';
+import '../../session_list/widgets/web_ssh_connection_settings.dart';
 import '../models/settings_catalog.dart';
 import '../state/settings_state.dart';
 import '../widgets/bridge_update_status_tile.dart';
@@ -89,6 +91,22 @@ class ConnectionSettingsSection extends StatelessWidget {
             ),
           ],
         ),
+        if (kIsWeb)
+          SettingsGroup(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l.machineEditSshConfiguration),
+                    const SizedBox(height: 12),
+                    const WebSshConnectionSettings(),
+                  ],
+                ),
+              ),
+            ],
+          ),
         if (visibility.hasActiveMachine && visibility.promptHistoryAvailable)
           SettingsItem(
             id: SettingsEntryIds.promptHistory,

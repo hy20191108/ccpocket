@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,6 +29,7 @@ import '../../services/connection_url_parser.dart';
 import '../../services/platform_environment_service.dart';
 import '../../services/server_discovery_service.dart';
 import '../../services/ssh_bridge_tunnel_service.dart';
+import '../../services/web_ssh_service.dart';
 import '../../widgets/workspace_pane_chrome.dart';
 import '../../widgets/adaptive_context_menu.dart';
 import '../../widgets/new_session_sheet.dart';
@@ -503,6 +505,33 @@ class _SessionListScreenState extends State<SessionListScreen>
     final prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
     final url = prefs.getString(_prefKeyUrl);
+    if (kIsWeb && (url == null || url.isEmpty)) {
+      final info = await WebSshService().info();
+      if (!mounted) return;
+      final alias = info?['alias'];
+      if (alias is String && alias.isNotEmpty) {
+        final cubit = context.read<MachineManagerCubit?>();
+        await cubit?.waitUntilLoaded();
+        if (!mounted) return;
+        final base = Uri.base;
+        await cubit?.recordConnection(
+          host: base.host,
+          port: base.port,
+          name: '$alias (SSH)',
+          useSsl: false,
+          connectionMode: BridgeConnectionMode.standardOnly,
+        );
+        if (!mounted) return;
+        await _connectWithParams(
+          base
+              .replace(scheme: 'ws', path: '', query: null, fragment: null)
+              .toString(),
+          null,
+          requestedConnectionMode: BridgeConnectionMode.standardOnly,
+        );
+        return;
+      }
+    }
     if (url != null && url.isNotEmpty) {
       setState(() => _isAutoConnecting = true);
       // Try to get API key from SecureStorage via MachineManagerCubit.

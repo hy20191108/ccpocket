@@ -14,7 +14,7 @@ const contentTypes = {
 // A single same-origin loopback endpoint serves the app and forwards Bridge
 // requests. In particular, a page on an unrelated origin cannot use this as
 // a tunnel into the user's remote host.
-export async function createGateway({ root, port, hostname = '127.0.0.1', openStream, onError = () => {} }) {
+export async function createGateway({ root, port, hostname = '127.0.0.1', openStream, listen = true, onError = () => {} }) {
   const appRoot = await realpath(root);
   const sockets = new Set();
   const upstreamStreams = new Set();
@@ -31,7 +31,7 @@ export async function createGateway({ root, port, hostname = '127.0.0.1', openSt
   const streamAgent = new Agent({ keepAlive: false });
   streamAgent.createConnection = trackedStream;
   const allowed = (req, navigation = false) => {
-    const authority = `${hostname}:${server.address().port}`;
+    const authority = `${hostname}:${port}`;
     const origin = req.headers.origin;
     const site = req.headers['sec-fetch-site'];
     return req.headers.host === authority &&
@@ -53,7 +53,7 @@ export async function createGateway({ root, port, hostname = '127.0.0.1', openSt
       throw error;
     }
   };
-  const server = createServer(async (req, res) => {
+  const handleRequest = async (req, res) => {
     if (!allowed(req, true)) { res.writeHead(403).end(); return; }
     try {
       if (req.method === 'GET' || req.method === 'HEAD') {
@@ -84,12 +84,13 @@ export async function createGateway({ root, port, hostname = '127.0.0.1', openSt
       if (!res.headersSent) res.writeHead(502);
       res.end('SSH connection failed. Check the launcher output.');
     }
-  });
+  };
+  const server = createServer(handleRequest);
   server.on('connection', socket => {
     sockets.add(socket);
     socket.once('close', () => sockets.delete(socket));
   });
-  server.on('upgrade', async (req, socket, head) => {
+  const handleUpgrade = async (req, socket, head) => {
     socket.on('error', () => socket.destroy());
     if (!allowed(req) || !req.headers.origin) {
       socket.end('HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n');
@@ -115,13 +116,17 @@ export async function createGateway({ root, port, hostname = '127.0.0.1', openSt
       onError(error);
       socket.end('HTTP/1.1 502 Bad Gateway\r\nConnection: close\r\n\r\n');
     }
-  });
-  await new Promise((resolveListen, reject) => {
+  };
+  server.on('upgrade', handleUpgrade);
+  if (listen) await new Promise((resolveListen, reject) => {
     server.once('error', reject);
     server.listen(port, '127.0.0.1', resolveListen);
   });
+  if (listen) port = server.address().port;
   return {
-    port: server.address().port,
+    port,
+    handleRequest,
+    handleUpgrade,
     connect: () => new Promise((resolveProbe, reject) => {
       const probe = request({ agent: streamAgent, path: '/health' }, response => {
         response.resume();
@@ -140,7 +145,7 @@ export async function createGateway({ root, port, hostname = '127.0.0.1', openSt
         const streams = [...upstreamStreams];
         for (const stream of streams) stream.destroy();
         closing = Promise.all([
-          new Promise(resolveClose => server.close(resolveClose)),
+          listen ? new Promise(resolveClose => server.close(resolveClose)) : undefined,
           ...streams.map(stream => stream.completion),
         ]);
       }

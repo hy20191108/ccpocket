@@ -7102,6 +7102,48 @@ abstract class AppLocalizations {
   /// In ja, this message translates to:
   /// **'以前のやり取りを表示するにはBridgeの更新が必要です。'**
   String get transcriptBridgeUpdate;
+
+  /// No description provided for @webSshAlias.
+  ///
+  /// In ja, this message translates to:
+  /// **'SSH接続先'**
+  String get webSshAlias;
+
+  /// No description provided for @webSshBridgePort.
+  ///
+  /// In ja, this message translates to:
+  /// **'SSH接続先のBridgeポート'**
+  String get webSshBridgePort;
+
+  /// No description provided for @webSshConnect.
+  ///
+  /// In ja, this message translates to:
+  /// **'SSHで接続'**
+  String get webSshConnect;
+
+  /// No description provided for @webSshDescription.
+  ///
+  /// In ja, this message translates to:
+  /// **'この端末に保存したSSH接続先を使います．踏み台と認証には，この端末の既存のSSH設定を使います．'**
+  String get webSshDescription;
+
+  /// No description provided for @webSshLocalAppRequired.
+  ///
+  /// In ja, this message translates to:
+  /// **'SSH接続は，この端末で起動したCC Pocketから利用できます．'**
+  String get webSshLocalAppRequired;
+
+  /// No description provided for @webSshInvalidDestination.
+  ///
+  /// In ja, this message translates to:
+  /// **'有効なSSH接続先と，1から65535のポート番号を入力してください．'**
+  String get webSshInvalidDestination;
+
+  /// No description provided for @webSshConnectionFailed.
+  ///
+  /// In ja, this message translates to:
+  /// **'SSH接続に失敗しました．この端末の接続先とSSH認証を確認してください．'**
+  String get webSshConnectionFailed;
 }
 
 class _AppLocalizationsDelegate

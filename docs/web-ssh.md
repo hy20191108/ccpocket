@@ -14,19 +14,34 @@ cd apps/mobile
 flutter pub get
 flutter build web --release --no-wasm-dry-run
 cd ../..
-npm run web:ssh -- --host my-ssh-alias --bridge-port 8765
+npm run web:ssh
 ```
 
-The alias must already work with non-interactive OpenSSH authentication, such as
-an SSH agent or an existing identity file. The remote Bridge must be running on
+The SSH destination chosen in the app must already work with non-interactive
+OpenSSH authentication, such as an SSH agent or an existing identity file. The remote Bridge must be running on
 `127.0.0.1` at the chosen port. The launcher does not start, update or stop the
 remote Bridge. Use a separate test Bridge port for verification.
 
-Open the printed `http://ccp-….localhost:8889` URL. In CC Pocket, add a machine
-with the printed hostname and port, leave secure connection off, and enter the
-Bridge API key if required. SSH encrypts the connection to the remote host;
-the browser-to-launcher connection stays on loopback. `--port` changes the local
-port. Keep that port stable to retain the browser's settings.
+Open the printed `http://ccpocket.localhost:8889/` URL. In CC Pocket, open
+**Add Machine > SSH**, enter the SSH destination name from this computer's
+OpenSSH configuration and the remote Bridge port, then select **Connect over
+SSH**. No manual SSH forwarding or local hostname entry is needed. Jump hosts
+and authentication use the existing local SSH configuration.
+
+After connecting, **Settings > Connection and Bridge > SSH Configuration** also
+shows the destination and port and lets you choose another connection.
+
+The app opens a dedicated origin for that destination, registers the machine,
+and connects automatically. If the Bridge requires an API key, enter it in the
+machine settings on that destination's page. API keys are never transferred
+when choosing another SSH destination. The current SSH destination and Bridge
+port appear in the same SSH settings when editing the machine.
+
+The launcher saves only the selected SSH aliases and Bridge ports in the user's
+local application state directory. On restart it rebuilds their routes from new
+trust snapshots. A previous tab whose trust identity changed is rejected.
+`--port` changes the local web port; keep it stable to retain browser settings.
+`--host my-ssh-alias --bridge-port 8765` remains available as an optional shortcut.
 
 Stopping the launcher closes the connections it owns and removes its temporary
 SSH configuration and trust files. After a dropped SSH connection, the app can
@@ -51,13 +66,16 @@ The SSH process stays in the foreground with its standard input enabled.
 
 The target configuration, SSH alias, Bridge port, and separate digests of the
 host trust and revocation content determine a dedicated `.localhost` origin.
-Changing any of these creates a different origin. The gateway rejects Host and
-Origin headers for a previous destination, including requests from an old tab.
+Changing any of these creates a different origin. Each origin can only reach
+its own frozen destination. An old tab cannot send credentials to a newly
+selected destination. After a launcher restart, origins whose trust identity
+changed are no longer registered and are rejected.
 Changing an unrelated entry in a copied trust file also creates a new origin;
 settings from the previous origin are not migrated automatically.
 
-Trust changes take effect on the next launcher start. Restart the launcher after
-revoking or changing a host key. An SSH host key identifies the server; it does
+Selecting Connect over SSH obtains a new trust snapshot. Existing destination
+origins keep their frozen snapshots for that launcher run. Restart the launcher
+after revoking a host key to remove all routes using the old trust. An SSH host key identifies the server; it does
 not distinguish a replacement Bridge service on the same server and port.
 
 The launcher fails closed for `KnownHostsCommand` and trust paths whose expansion
@@ -89,6 +107,10 @@ jump host effective SSH configurations matched their original configurations.
 Certificate and revoked-key contents are preserved and unit tested; actual
 certificate and revoked-key SSH handshakes have not been exercised.
 
-The Flutter release web build succeeded. Browser UI operation and browser secure
-context/storage behavior have not yet been verified because the Windows browser
-control tool could not determine the active browser URL.
+The Flutter release web build succeeded. In Chrome, the SSH destination and
+Bridge port were entered in the app, Connect over SSH opened the dedicated
+origin, and the machine registered and connected automatically. A Claude session
+created through the UI returned the synthetic test reply. Browser reload and
+launcher restart both reconnected with the saved configuration. The test session
+was then stopped; the original sessions remained active. Chrome reported the
+`.localhost` page as a secure context and retained its machine settings.

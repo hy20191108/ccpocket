@@ -1,12 +1,11 @@
 import { fileURLToPath } from 'node:url';
 import { stat } from 'node:fs/promises';
 import { join } from 'node:path';
-import { createGateway } from './gateway.mjs';
-import { destinationOrigin, validateDestination } from './destination.mjs';
-import { snapshotTrust } from './trust.mjs';
-import { openSshStream } from './ssh-stream.mjs';
+import { homedir } from 'node:os';
+import { validateDestination } from './destination.mjs';
+import { createSshManager } from './manager.mjs';
 
-const help = `Usage: npm run web:ssh -- --host SSH_ALIAS [--bridge-port 8765] [--port 8889]
+const help = `Usage: npm run web:ssh -- [--host SSH_ALIAS] [--bridge-port 8765] [--port 8889]
 
 Build the web app first: cd apps/mobile && flutter build web --release
 The SSH alias uses your local OpenSSH configuration and authentication agent.
@@ -25,8 +24,7 @@ function readOptions(args) {
   const alias = values['--host'];
   const remotePort = Number(values['--bridge-port'] ?? 8765);
   const port = Number(values['--port'] ?? 8889);
-  if (!alias) throw Error('The --host SSH alias is required');
-  validateDestination(alias, remotePort);
+  validateDestination(alias ?? 'setup', remotePort);
   if (!Number.isInteger(port) || port < 1 || port > 65535) throw Error('Invalid local port');
   return { alias, remotePort, port };
 }
@@ -38,27 +36,21 @@ try {
     const root = fileURLToPath(new URL('../../apps/mobile/build/web/', import.meta.url));
     const index = await stat(join(root, 'index.html')).catch(() => null);
     if (!index?.isFile()) throw Error('Web build is missing');
-    const trust = await snapshotTrust(options);
-    const hostname = destinationOrigin(trust.identity);
-    let gateway;
-    const close = async () => { await gateway?.close(); await trust.close(); };
-    try {
-    gateway = await createGateway({
+    const manager = await createSshManager({
       root,
       port: options.port,
-      hostname,
-      openStream: () => openSshStream({ ...options, ...trust }),
+      statePath: join(process.env.LOCALAPPDATA ?? join(homedir(), '.local', 'state'), 'ccpocket', 'web-ssh', 'destinations.json'),
       onError: error => console.error(`SSH Bridge connection failed: ${error.message}`),
     });
-    for (const signal of ['SIGINT', 'SIGTERM']) {
-      process.once(signal, async () => { await close(); process.exit(0); });
-    }
-    console.log(`Connecting to SSH host ${options.alias}...`);
-    await gateway.connect();
-    console.log(`CC Pocket: http://${hostname}:${gateway.port}`);
-    console.log(`Add a machine with host ${hostname} and port ${gateway.port}. Its Bridge connection uses SSH host ${options.alias}.`);
-    console.log('Press Ctrl+C to stop the web server and SSH connection.');
-    } catch (error) { await close(); throw error; }
+    try {
+      for (const signal of ['SIGINT', 'SIGTERM']) {
+        process.once(signal, async () => { await manager.close(); process.exit(0); });
+      }
+      const target = options.alias ? await manager.connect(options) : null;
+      console.log(`CC Pocket: ${target?.url ?? manager.url}`);
+      console.log(`SSH settings: ${manager.url} (Add Machine > SSH)`);
+      console.log('Press Ctrl+C to stop the web server and SSH connections.');
+    } catch (error) { await manager.close(); throw error; }
   }
 } catch (error) {
   console.error(`${error.message}\n${help}`);

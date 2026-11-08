@@ -3816,4 +3816,29 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get transcriptBridgeUpdate => '이전 대화를 보려면 Bridge를 업데이트해야 합니다.';
+
+  @override
+  String get webSshAlias => 'SSH 연결 대상';
+
+  @override
+  String get webSshBridgePort => 'SSH 서버의 Bridge 포트';
+
+  @override
+  String get webSshConnect => 'SSH로 연결';
+
+  @override
+  String get webSshDescription =>
+      '이 컴퓨터에 저장된 SSH 연결 대상을 사용합니다. 점프 호스트와 인증에는 기존 SSH 설정을 사용합니다.';
+
+  @override
+  String get webSshLocalAppRequired =>
+      '이 컴퓨터에서 실행한 CC Pocket에서 SSH 연결을 사용할 수 있습니다.';
+
+  @override
+  String get webSshInvalidDestination =>
+      '올바른 SSH 연결 대상과 1부터 65535 사이의 포트를 입력하세요.';
+
+  @override
+  String get webSshConnectionFailed =>
+      'SSH 연결에 실패했습니다. 이 컴퓨터의 연결 대상과 SSH 인증을 확인하세요.';
 }

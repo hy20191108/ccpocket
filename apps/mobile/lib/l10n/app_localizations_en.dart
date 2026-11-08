@@ -3935,4 +3935,29 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get transcriptBridgeUpdate =>
       'Update Bridge to view earlier messages.';
+
+  @override
+  String get webSshAlias => 'SSH destination';
+
+  @override
+  String get webSshBridgePort => 'Bridge port on the SSH server';
+
+  @override
+  String get webSshConnect => 'Connect over SSH';
+
+  @override
+  String get webSshDescription =>
+      'Use an SSH destination saved on this computer. Jump hosts and authentication use its existing SSH settings.';
+
+  @override
+  String get webSshLocalAppRequired =>
+      'SSH connections are available when CC Pocket is running on this computer.';
+
+  @override
+  String get webSshInvalidDestination =>
+      'Enter a valid SSH destination and a port from 1 to 65535.';
+
+  @override
+  String get webSshConnectionFailed =>
+      'SSH connection failed. Check the destination and SSH authentication on this computer.';
 }

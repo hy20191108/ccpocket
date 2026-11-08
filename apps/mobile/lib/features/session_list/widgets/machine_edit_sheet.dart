@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import '../../../l10n/app_localizations.dart';
 import '../../../models/machine.dart';
 import '../../../services/ssh_startup_service.dart';
 import '../../../theme/app_theme.dart';
 import '../../../utils/network_endpoint.dart';
+import 'web_ssh_connection_settings.dart';
 
 /// Bottom sheet for adding or editing a remote machine configuration.
 class MachineEditSheet extends StatefulWidget {
@@ -555,34 +557,38 @@ class _MachineEditSheetState extends State<MachineEditSheet> {
                       _SectionHeader(title: l.machineEditSshConfiguration),
                       const SizedBox(height: 12),
 
-                      _TileCard(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SwitchListTile(
-                              title: Text(
-                                l.machineEditEnableSshRemoteStartup,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
+                      if (kIsWeb)
+                        const WebSshConnectionSettings()
+                      else
+                        _TileCard(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SwitchListTile(
+                                title: Text(
+                                  l.machineEditEnableSshRemoteStartup,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  l.machineEditEnableSshRemoteStartupSubtitle,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                                value: _sshEnabled,
+                                onChanged: (v) =>
+                                    setState(() => _sshEnabled = v),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
                                 ),
                               ),
-                              subtitle: Text(
-                                l.machineEditEnableSshRemoteStartupSubtitle,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                              value: _sshEnabled,
-                              onChanged: (v) => setState(() => _sshEnabled = v),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
 
-                      if (_sshEnabled) ...[
+                      if (_sshEnabled && !kIsWeb) ...[
                         const SizedBox(height: 12),
 
                         Row(

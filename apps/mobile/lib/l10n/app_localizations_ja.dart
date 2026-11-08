@@ -3788,4 +3788,26 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get transcriptBridgeUpdate => '以前のやり取りを表示するにはBridgeの更新が必要です。';
+
+  @override
+  String get webSshAlias => 'SSH接続先';
+
+  @override
+  String get webSshBridgePort => 'SSH接続先のBridgeポート';
+
+  @override
+  String get webSshConnect => 'SSHで接続';
+
+  @override
+  String get webSshDescription =>
+      'この端末に保存したSSH接続先を使います．踏み台と認証には，この端末の既存のSSH設定を使います．';
+
+  @override
+  String get webSshLocalAppRequired => 'SSH接続は，この端末で起動したCC Pocketから利用できます．';
+
+  @override
+  String get webSshInvalidDestination => '有効なSSH接続先と，1から65535のポート番号を入力してください．';
+
+  @override
+  String get webSshConnectionFailed => 'SSH接続に失敗しました．この端末の接続先とSSH認証を確認してください．';
 }

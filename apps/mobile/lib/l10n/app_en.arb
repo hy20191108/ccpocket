@@ -1545,5 +1545,12 @@
   "transcriptLoadOlder": "Load older messages",
   "transcriptEmpty": "No messages to show",
   "transcriptLoadFailed": "Couldn't load messages",
-  "transcriptBridgeUpdate": "Update Bridge to view earlier messages."
+  "transcriptBridgeUpdate": "Update Bridge to view earlier messages.",
+  "webSshAlias": "SSH destination",
+  "webSshBridgePort": "Bridge port on the SSH server",
+  "webSshConnect": "Connect over SSH",
+  "webSshDescription": "Use an SSH destination saved on this computer. Jump hosts and authentication use its existing SSH settings.",
+  "webSshLocalAppRequired": "SSH connections are available when CC Pocket is running on this computer.",
+  "webSshInvalidDestination": "Enter a valid SSH destination and a port from 1 to 65535.",
+  "webSshConnectionFailed": "SSH connection failed. Check the destination and SSH authentication on this computer."
 }
