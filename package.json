@@ -17,6 +17,8 @@
     "prepare": "bash scripts/setup-hooks.sh",
     "bridge": "npm run dev --workspace=packages/bridge",
     "bridge:build": "npm run build --workspace=packages/bridge",
+    "web:ssh": "node scripts/web-ssh/cli.mjs",
+    "test:web-ssh": "node scripts/web-ssh/test.mjs",
     "dev": "bash scripts/dev-restart.sh",
     "setup": "bash scripts/setup-launchd.sh",
     "bridge:doctor": "npm run doctor --workspace=packages/bridge",
