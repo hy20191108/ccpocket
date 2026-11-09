@@ -2,6 +2,8 @@
 
 Windows・macOS・Linux版では，マシン追加画面の「OpenSSHで接続」を使い，OSの`ssh`と既存のSSH設定を利用できる．Web版のローカルヘルパーは不要．
 
+この方式を選んだ理由とiOS対応・配布の範囲は[ADR](architecture/adr-desktop-openssh.md)を参照する．
+
 ## 接続方法
 
 1. ターミナルで`ssh <接続先の別名>`が追加のパスワード入力なしで接続できるように設定する．`~/.ssh/config`の`Host`，`ProxyJump`，鍵，SSHエージェントをそのまま使う．初回のホスト鍵確認も先に行う．
