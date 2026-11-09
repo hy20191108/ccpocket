@@ -3766,4 +3766,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get webSshConnectionFailed => 'SSH 连接失败。请检查此计算机的连接目标和 SSH 身份验证。';
+
+  @override
+  String get desktopOpenSshConnection => '使用 OpenSSH 连接';
 }

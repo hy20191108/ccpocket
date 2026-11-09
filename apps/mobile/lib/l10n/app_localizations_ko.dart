@@ -3841,4 +3841,7 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get webSshConnectionFailed =>
       'SSH 연결에 실패했습니다. 이 컴퓨터의 연결 대상과 SSH 인증을 확인하세요.';
+
+  @override
+  String get desktopOpenSshConnection => 'OpenSSH로 연결';
 }

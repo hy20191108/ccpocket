@@ -1606,5 +1606,6 @@
   "webSshDescription": "使用此计算机中保存的 SSH 连接目标。跳板机和身份验证使用现有的 SSH 设置。",
   "webSshLocalAppRequired": "通过此计算机上运行的 CC Pocket 可以使用 SSH 连接。",
   "webSshInvalidDestination": "请输入有效的 SSH 连接目标和 1 到 65535 之间的端口。",
-  "webSshConnectionFailed": "SSH 连接失败。请检查此计算机的连接目标和 SSH 身份验证。"
+  "webSshConnectionFailed": "SSH 连接失败。请检查此计算机的连接目标和 SSH 身份验证。",
+  "desktopOpenSshConnection": "使用 OpenSSH 连接"
 }

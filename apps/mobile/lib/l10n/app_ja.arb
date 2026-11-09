@@ -1622,5 +1622,6 @@
   "webSshDescription": "この端末に保存したSSH接続先を使います．踏み台と認証には，この端末の既存のSSH設定を使います．",
   "webSshLocalAppRequired": "SSH接続は，この端末で起動したCC Pocketから利用できます．",
   "webSshInvalidDestination": "有効なSSH接続先と，1から65535のポート番号を入力してください．",
-  "webSshConnectionFailed": "SSH接続に失敗しました．この端末の接続先とSSH認証を確認してください．"
+  "webSshConnectionFailed": "SSH接続に失敗しました．この端末の接続先とSSH認証を確認してください．",
+  "desktopOpenSshConnection": "OpenSSHで接続"
 }

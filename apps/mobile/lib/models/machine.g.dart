@@ -44,6 +44,7 @@ _Machine _$MachineFromJson(Map<String, dynamic> json) => _Machine(
       ? null
       : DateTime.parse(json['lastConnected'] as String),
   isFavorite: json['isFavorite'] as bool? ?? false,
+  sshConfigAlias: json['sshConfigAlias'] as String?,
   sshEnabled: json['sshEnabled'] as bool? ?? false,
   sshUsername: json['sshUsername'] as String?,
   sshPort: (json['sshPort'] as num?)?.toInt() ?? 22,
@@ -71,6 +72,7 @@ Map<String, dynamic> _$MachineToJson(_Machine instance) => <String, dynamic>{
   'hasApiKey': instance.hasApiKey,
   'lastConnected': instance.lastConnected?.toIso8601String(),
   'isFavorite': instance.isFavorite,
+  'sshConfigAlias': instance.sshConfigAlias,
   'sshEnabled': instance.sshEnabled,
   'sshUsername': instance.sshUsername,
   'sshPort': instance.sshPort,

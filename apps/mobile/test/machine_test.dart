@@ -85,6 +85,19 @@ void main() {
       },
     );
 
+    test('desktop OpenSSH alias survives saved machine round trip', () {
+      const machine = Machine(
+        id: 'desktop',
+        host: 'host-alias',
+        port: 8767,
+        sshConfigAlias: 'host-alias',
+      );
+      final restored = Machine.fromJson(machine.toJson());
+      expect(restored.sshConfigAlias, 'host-alias');
+      expect(restored.hasSshTunnel, isTrue);
+      expect(restored.canStartRemotely, isFalse);
+    });
+
     test('SSH jump host fields round trip through JSON', () {
       const machine = Machine(
         id: 'm5',

@@ -4,6 +4,8 @@ import 'package:ccpocket/models/machine.dart';
 import 'package:ccpocket/services/ssh_startup_service.dart';
 import 'package:ccpocket/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart'
+    show debugDefaultTargetPlatformOverride;
 import 'package:flutter_test/flutter_test.dart';
 
 class _TestConnectionCall {
@@ -135,6 +137,44 @@ void main() {
   }
 
   group('MachineEditSheet secure connection', () {
+    testWidgets(
+      'saves a desktop OpenSSH alias without requesting credentials',
+      (tester) async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.windows;
+        addTearDown(() => debugDefaultTargetPlatformOverride = null);
+        Machine? saved;
+        await pumpSheet(
+          tester,
+          machine: const Machine(id: 'desktop', host: 'host-alias', port: 8767),
+          onSave:
+              ({
+                required machine,
+                apiKey,
+                sshPassword,
+                sshPrivateKey,
+                sshJumpPassword,
+                sshJumpPrivateKey,
+              }) async {
+                saved = machine;
+              },
+        );
+        await tester.tap(find.byKey(const ValueKey('desktop_open_ssh_toggle')));
+        await tester.pumpAndSettle();
+        expect(
+          find.widgetWithText(TextField, 'SSH destination'),
+          findsOneWidget,
+        );
+        expect(find.widgetWithText(TextField, 'SSH Username'), findsNothing);
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+        expect(saved?.sshConfigAlias, 'host-alias');
+        expect(saved?.port, 8767);
+        expect(saved?.useSsl, isFalse);
+        expect(saved?.hasResolvedTransport, isTrue);
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
     testWidgets('defaults connection method to automatic when adding', (
       tester,
     ) async {

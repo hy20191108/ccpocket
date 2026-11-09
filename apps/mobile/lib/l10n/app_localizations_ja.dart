@@ -3810,4 +3810,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get webSshConnectionFailed => 'SSH接続に失敗しました．この端末の接続先とSSH認証を確認してください．';
+
+  @override
+  String get desktopOpenSshConnection => 'OpenSSHで接続';
 }

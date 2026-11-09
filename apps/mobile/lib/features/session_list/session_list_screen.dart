@@ -2440,6 +2440,7 @@ class _SessionListScreenState extends State<SessionListScreen>
                   useSsl: machine.useSsl,
                   connectionMode: machine.connectionMode,
                   sshEnabled: machine.sshEnabled,
+                  sshConfigAlias: machine.sshConfigAlias,
                   sshUsername: machine.sshUsername,
                   sshPort: machine.sshPort,
                   sshAuthType: machine.sshAuthType,
@@ -2459,7 +2460,7 @@ class _SessionListScreenState extends State<SessionListScreen>
             },
         onSaveAndConnect: (machine, apiKey) {
           final saved = savedMachine;
-          if (saved?.sshJumpHost?.trim().isNotEmpty == true) {
+          if (saved?.hasSshTunnel == true) {
             unawaited(_connectToMachineConfig(saved!));
           } else if (saved != null) {
             _connectWithParams(
@@ -2514,8 +2515,7 @@ class _SessionListScreenState extends State<SessionListScreen>
     }
 
     final resolvedMachine = cubit.getMachine(machine.id) ?? machine;
-    final usesEncryptedTunnel =
-        resolvedMachine.sshJumpHost?.trim().isNotEmpty == true;
+    final usesEncryptedTunnel = resolvedMachine.hasSshTunnel;
     final actualUseSsl = wsUrl.startsWith('wss://');
     if (!usesEncryptedTunnel && actualUseSsl != resolvedMachine.useSsl) {
       await tunnelService?.closeAll();
@@ -2587,6 +2587,7 @@ class _SessionListScreenState extends State<SessionListScreen>
       before.useSsl == after.useSsl &&
       before.connectionMode == after.connectionMode &&
       before.sshEnabled == after.sshEnabled &&
+      before.sshConfigAlias == after.sshConfigAlias &&
       before.sshUsername == after.sshUsername &&
       before.sshPort == after.sshPort &&
       before.sshAuthType == after.sshAuthType &&
@@ -2827,6 +2828,7 @@ class _SessionListScreenState extends State<SessionListScreen>
                   useSsl: machine.useSsl,
                   connectionMode: machine.connectionMode,
                   sshEnabled: machine.sshEnabled,
+                  sshConfigAlias: machine.sshConfigAlias,
                   sshUsername: machine.sshUsername,
                   sshPort: machine.sshPort,
                   sshAuthType: machine.sshAuthType,
@@ -2846,7 +2848,7 @@ class _SessionListScreenState extends State<SessionListScreen>
             },
         onSaveAndConnect: (machine, apiKey) {
           final saved = savedMachine;
-          if (saved?.sshJumpHost?.trim().isNotEmpty == true) {
+          if (saved?.hasSshTunnel == true) {
             unawaited(_connectToMachineConfig(saved!));
           } else if (saved != null) {
             _connectWithParams(

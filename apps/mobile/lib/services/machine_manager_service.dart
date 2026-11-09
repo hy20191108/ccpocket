@@ -716,7 +716,7 @@ class MachineManagerService {
     final connectionEpoch = _connectionEpochs[machineId] ?? 0;
 
     try {
-      final usesSshTunnel = machine.sshJumpHost?.trim().isNotEmpty == true;
+      final usesSshTunnel = machine.hasSshTunnel;
       final canProbeDirectly = !usesSshTunnel;
       if (machine.connectionMode == BridgeConnectionMode.automatic &&
           canProbeDirectly) {
@@ -871,7 +871,8 @@ class MachineManagerService {
       before.connectionMode == after.connectionMode &&
       before.useSsl == after.useSsl &&
       before.hasResolvedTransport == after.hasResolvedTransport &&
-      before.sshJumpHost == after.sshJumpHost;
+      before.sshJumpHost == after.sshJumpHost &&
+      before.sshConfigAlias == after.sshConfigAlias;
 
   MachineStatus _finishHealthCheck(String machineId, int connectionEpoch) {
     if (_statusCache[machineId] != MachineStatus.online &&

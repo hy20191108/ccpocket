@@ -1552,5 +1552,6 @@
   "webSshDescription": "Use an SSH destination saved on this computer. Jump hosts and authentication use its existing SSH settings.",
   "webSshLocalAppRequired": "SSH connections are available when CC Pocket is running on this computer.",
   "webSshInvalidDestination": "Enter a valid SSH destination and a port from 1 to 65535.",
-  "webSshConnectionFailed": "SSH connection failed. Check the destination and SSH authentication on this computer."
+  "webSshConnectionFailed": "SSH connection failed. Check the destination and SSH authentication on this computer.",
+  "desktopOpenSshConnection": "Connect using OpenSSH"
 }

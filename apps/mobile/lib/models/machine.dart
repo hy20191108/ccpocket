@@ -141,6 +141,9 @@ abstract class Machine with _$Machine {
 
     // ---- SSH Configuration ----
 
+    /// Desktop OpenSSH host alias. Authentication and jump hosts use ~/.ssh/config.
+    String? sshConfigAlias,
+
     /// Whether SSH remote startup is enabled
     @Default(false) bool sshEnabled,
 
@@ -194,6 +197,10 @@ abstract class Machine with _$Machine {
 
   /// Whether this machine can be started remotely (SSH configured)
   bool get canStartRemotely => sshEnabled && sshUsername != null;
+
+  bool get hasSshTunnel =>
+      sshConfigAlias?.trim().isNotEmpty == true ||
+      sshJumpHost?.trim().isNotEmpty == true;
 }
 
 /// Runtime state wrapper for Machine with status and version information.

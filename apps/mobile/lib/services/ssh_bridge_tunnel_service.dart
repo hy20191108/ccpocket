@@ -5,6 +5,7 @@ import 'package:dartssh2/dartssh2.dart';
 
 import '../models/machine.dart';
 import 'machine_manager_service.dart';
+import 'open_ssh_bridge_tunnel.dart';
 
 /// Maintains local TCP forwards for Bridge HTTP/WebSocket traffic that must
 /// traverse an SSH jump host.
@@ -12,7 +13,9 @@ class SshBridgeTunnelService {
   final MachineManagerService _machineManager;
   final Duration connectionTimeout;
   final void Function(String?)? debugLog;
-  final Map<String, _BridgeTunnel> _tunnels = {};
+  final Map<String, ManagedBridgeTunnel> _tunnels = {};
+  final Map<String, ({String signature, Future<ManagedBridgeTunnel> future})>
+  _openSshStarts = {};
 
   SshBridgeTunnelService(
     this._machineManager, {
@@ -50,29 +53,77 @@ class SshBridgeTunnelService {
 
   Future<void> closeForMachine(String machineId) async {
     final tunnel = _tunnels.remove(machineId);
+    final opening = _openSshStarts.remove(machineId);
+    try {
+      await opening?.future;
+    } catch (_) {}
     await tunnel?.close();
   }
 
   Future<void> closeAllExcept(String machineId) async {
-    final machineIds = _tunnels.keys.where((id) => id != machineId).toList();
+    final machineIds = {
+      ..._tunnels.keys,
+      ..._openSshStarts.keys,
+    }.where((id) => id != machineId).toList();
     for (final id in machineIds) {
       await closeForMachine(id);
     }
   }
 
   Future<void> closeAll() async {
-    final tunnels = _tunnels.values.toList();
-    _tunnels.clear();
-    for (final tunnel in tunnels) {
-      await tunnel.close();
+    final machineIds = {..._tunnels.keys, ..._openSshStarts.keys}.toList();
+    for (final id in machineIds) {
+      await closeForMachine(id);
     }
   }
 
-  Future<_BridgeTunnel?> _ensureTunnel(
+  Future<ManagedBridgeTunnel?> _ensureTunnel(
     Machine machine, {
     String? password,
     Future<String?> Function()? promptForPassword,
   }) async {
+    final alias = machine.sshConfigAlias?.trim();
+    if (alias != null && alias.isNotEmpty) {
+      if (!(Platform.isWindows || Platform.isMacOS || Platform.isLinux) ||
+          machine.useSsl) {
+        throw UnsupportedError(
+          'OpenSSH Bridge connections require a desktop and standard transport',
+        );
+      }
+      final signature = '${machine.id}\nOpenSSH\n$alias\n${machine.port}';
+      final existing = _tunnels[machine.id];
+      if (existing?.signature == signature) return existing;
+      final pending = _openSshStarts[machine.id];
+      if (pending?.signature == signature) return pending!.future;
+      await closeForMachine(machine.id);
+      final ready = _tunnels[machine.id];
+      if (ready?.signature == signature) return ready;
+      final raced = _openSshStarts[machine.id];
+      if (raced?.signature == signature) return raced!.future;
+      if (raced != null) await closeForMachine(machine.id);
+      late final Future<ManagedBridgeTunnel> opening;
+      opening = () async {
+        final tunnel = await OpenSshBridgeTunnel.start(
+          signature: signature,
+          alias: alias,
+          remotePort: machine.port,
+        );
+        if (_openSshStarts[machine.id]?.future != opening) {
+          await tunnel.close();
+          throw StateError('SSH connection cancelled');
+        }
+        _tunnels[machine.id] = tunnel;
+        return tunnel;
+      }();
+      _openSshStarts[machine.id] = (signature: signature, future: opening);
+      try {
+        return await opening;
+      } finally {
+        if (_openSshStarts[machine.id]?.future == opening) {
+          _openSshStarts.remove(machine.id);
+        }
+      }
+    }
     final jumpHost = machine.sshJumpHost?.trim();
     if (jumpHost == null || jumpHost.isEmpty) return null;
     if (machine.useSsl) {
@@ -210,8 +261,9 @@ class _JumpCredentials {
   });
 }
 
-class _BridgeTunnel {
+class _BridgeTunnel implements ManagedBridgeTunnel {
   final String machineId;
+  @override
   final String signature;
   final SSHClient _jumpClient;
   final ServerSocket _server;
@@ -229,6 +281,7 @@ class _BridgeTunnel {
        _server = server,
        _serverSubscription = serverSubscription;
 
+  @override
   int get localPort => _server.port;
 
   static Future<_BridgeTunnel> start({
@@ -356,6 +409,7 @@ class _BridgeTunnel {
     }
   }
 
+  @override
   Future<void> close() async {
     await _serverSubscription.cancel();
     await _server.close();

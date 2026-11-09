@@ -3960,4 +3960,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get webSshConnectionFailed =>
       'SSH connection failed. Check the destination and SSH authentication on this computer.';
+
+  @override
+  String get desktopOpenSshConnection => 'Connect using OpenSSH';
 }

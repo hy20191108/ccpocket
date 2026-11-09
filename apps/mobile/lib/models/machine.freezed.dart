@@ -311,7 +311,8 @@ mixin _$Machine {
  bool get hasResolvedTransport;/// Whether API key is stored in secure storage
  bool get hasApiKey;/// Last successful connection time
  DateTime? get lastConnected;/// Whether this machine is pinned/favorited (shows at top)
- bool get isFavorite;/// Whether SSH remote startup is enabled
+ bool get isFavorite;/// Desktop OpenSSH host alias. Authentication and jump hosts use ~/.ssh/config.
+ String? get sshConfigAlias;/// Whether SSH remote startup is enabled
  bool get sshEnabled;/// SSH username
  String? get sshUsername;/// SSH port
  int get sshPort;/// SSH authentication type
@@ -335,20 +336,20 @@ $MachineCopyWith<Machine> get copyWith => _$MachineCopyWithImpl<Machine>(this as
 @override
 bool operator ==(Object other) {
   final _this = this as Machine;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Machine&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.host, _this.host) || other.host == _this.host)&&(identical(other.port, _this.port) || other.port == _this.port)&&(identical(other.useSsl, _this.useSsl) || other.useSsl == _this.useSsl)&&(identical(other.connectionMode, _this.connectionMode) || other.connectionMode == _this.connectionMode)&&(identical(other.hasResolvedTransport, _this.hasResolvedTransport) || other.hasResolvedTransport == _this.hasResolvedTransport)&&(identical(other.hasApiKey, _this.hasApiKey) || other.hasApiKey == _this.hasApiKey)&&(identical(other.lastConnected, _this.lastConnected) || other.lastConnected == _this.lastConnected)&&(identical(other.isFavorite, _this.isFavorite) || other.isFavorite == _this.isFavorite)&&(identical(other.sshEnabled, _this.sshEnabled) || other.sshEnabled == _this.sshEnabled)&&(identical(other.sshUsername, _this.sshUsername) || other.sshUsername == _this.sshUsername)&&(identical(other.sshPort, _this.sshPort) || other.sshPort == _this.sshPort)&&(identical(other.sshAuthType, _this.sshAuthType) || other.sshAuthType == _this.sshAuthType)&&(identical(other.sshJumpHost, _this.sshJumpHost) || other.sshJumpHost == _this.sshJumpHost)&&(identical(other.sshJumpPort, _this.sshJumpPort) || other.sshJumpPort == _this.sshJumpPort)&&(identical(other.sshJumpUsername, _this.sshJumpUsername) || other.sshJumpUsername == _this.sshJumpUsername)&&(identical(other.sshJumpAuthType, _this.sshJumpAuthType) || other.sshJumpAuthType == _this.sshJumpAuthType)&&(identical(other.hasCredentials, _this.hasCredentials) || other.hasCredentials == _this.hasCredentials)&&(identical(other.hasJumpCredentials, _this.hasJumpCredentials) || other.hasJumpCredentials == _this.hasJumpCredentials));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Machine&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.host, _this.host) || other.host == _this.host)&&(identical(other.port, _this.port) || other.port == _this.port)&&(identical(other.useSsl, _this.useSsl) || other.useSsl == _this.useSsl)&&(identical(other.connectionMode, _this.connectionMode) || other.connectionMode == _this.connectionMode)&&(identical(other.hasResolvedTransport, _this.hasResolvedTransport) || other.hasResolvedTransport == _this.hasResolvedTransport)&&(identical(other.hasApiKey, _this.hasApiKey) || other.hasApiKey == _this.hasApiKey)&&(identical(other.lastConnected, _this.lastConnected) || other.lastConnected == _this.lastConnected)&&(identical(other.isFavorite, _this.isFavorite) || other.isFavorite == _this.isFavorite)&&(identical(other.sshConfigAlias, _this.sshConfigAlias) || other.sshConfigAlias == _this.sshConfigAlias)&&(identical(other.sshEnabled, _this.sshEnabled) || other.sshEnabled == _this.sshEnabled)&&(identical(other.sshUsername, _this.sshUsername) || other.sshUsername == _this.sshUsername)&&(identical(other.sshPort, _this.sshPort) || other.sshPort == _this.sshPort)&&(identical(other.sshAuthType, _this.sshAuthType) || other.sshAuthType == _this.sshAuthType)&&(identical(other.sshJumpHost, _this.sshJumpHost) || other.sshJumpHost == _this.sshJumpHost)&&(identical(other.sshJumpPort, _this.sshJumpPort) || other.sshJumpPort == _this.sshJumpPort)&&(identical(other.sshJumpUsername, _this.sshJumpUsername) || other.sshJumpUsername == _this.sshJumpUsername)&&(identical(other.sshJumpAuthType, _this.sshJumpAuthType) || other.sshJumpAuthType == _this.sshJumpAuthType)&&(identical(other.hasCredentials, _this.hasCredentials) || other.hasCredentials == _this.hasCredentials)&&(identical(other.hasJumpCredentials, _this.hasJumpCredentials) || other.hasJumpCredentials == _this.hasJumpCredentials));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as Machine;
-  return Object.hashAll([runtimeType,_this.id,_this.name,_this.host,_this.port,_this.useSsl,_this.connectionMode,_this.hasResolvedTransport,_this.hasApiKey,_this.lastConnected,_this.isFavorite,_this.sshEnabled,_this.sshUsername,_this.sshPort,_this.sshAuthType,_this.sshJumpHost,_this.sshJumpPort,_this.sshJumpUsername,_this.sshJumpAuthType,_this.hasCredentials,_this.hasJumpCredentials]);
+  return Object.hashAll([runtimeType,_this.id,_this.name,_this.host,_this.port,_this.useSsl,_this.connectionMode,_this.hasResolvedTransport,_this.hasApiKey,_this.lastConnected,_this.isFavorite,_this.sshConfigAlias,_this.sshEnabled,_this.sshUsername,_this.sshPort,_this.sshAuthType,_this.sshJumpHost,_this.sshJumpPort,_this.sshJumpUsername,_this.sshJumpAuthType,_this.hasCredentials,_this.hasJumpCredentials]);
 }
 
 @override
 String toString() {
   final _this = this as Machine;
-  return 'Machine(id: ${_this.id}, name: ${_this.name}, host: ${_this.host}, port: ${_this.port}, useSsl: ${_this.useSsl}, connectionMode: ${_this.connectionMode}, hasResolvedTransport: ${_this.hasResolvedTransport}, hasApiKey: ${_this.hasApiKey}, lastConnected: ${_this.lastConnected}, isFavorite: ${_this.isFavorite}, sshEnabled: ${_this.sshEnabled}, sshUsername: ${_this.sshUsername}, sshPort: ${_this.sshPort}, sshAuthType: ${_this.sshAuthType}, sshJumpHost: ${_this.sshJumpHost}, sshJumpPort: ${_this.sshJumpPort}, sshJumpUsername: ${_this.sshJumpUsername}, sshJumpAuthType: ${_this.sshJumpAuthType}, hasCredentials: ${_this.hasCredentials}, hasJumpCredentials: ${_this.hasJumpCredentials})';
+  return 'Machine(id: ${_this.id}, name: ${_this.name}, host: ${_this.host}, port: ${_this.port}, useSsl: ${_this.useSsl}, connectionMode: ${_this.connectionMode}, hasResolvedTransport: ${_this.hasResolvedTransport}, hasApiKey: ${_this.hasApiKey}, lastConnected: ${_this.lastConnected}, isFavorite: ${_this.isFavorite}, sshConfigAlias: ${_this.sshConfigAlias}, sshEnabled: ${_this.sshEnabled}, sshUsername: ${_this.sshUsername}, sshPort: ${_this.sshPort}, sshAuthType: ${_this.sshAuthType}, sshJumpHost: ${_this.sshJumpHost}, sshJumpPort: ${_this.sshJumpPort}, sshJumpUsername: ${_this.sshJumpUsername}, sshJumpAuthType: ${_this.sshJumpAuthType}, hasCredentials: ${_this.hasCredentials}, hasJumpCredentials: ${_this.hasJumpCredentials})';
 }
 
 
@@ -359,7 +360,7 @@ abstract mixin class $MachineCopyWith<$Res>  {
   factory $MachineCopyWith(Machine value, $Res Function(Machine) _then) = _$MachineCopyWithImpl;
 @useResult
 $Res call({
- String id, String? name, String host, int port, bool useSsl, BridgeConnectionMode connectionMode, bool hasResolvedTransport, bool hasApiKey, DateTime? lastConnected, bool isFavorite, bool sshEnabled, String? sshUsername, int sshPort, SshAuthType sshAuthType, String? sshJumpHost, int sshJumpPort, String? sshJumpUsername, SshAuthType sshJumpAuthType, bool hasCredentials, bool hasJumpCredentials
+ String id, String? name, String host, int port, bool useSsl, BridgeConnectionMode connectionMode, bool hasResolvedTransport, bool hasApiKey, DateTime? lastConnected, bool isFavorite, String? sshConfigAlias, bool sshEnabled, String? sshUsername, int sshPort, SshAuthType sshAuthType, String? sshJumpHost, int sshJumpPort, String? sshJumpUsername, SshAuthType sshJumpAuthType, bool hasCredentials, bool hasJumpCredentials
 });
 
 
@@ -376,7 +377,7 @@ class _$MachineCopyWithImpl<$Res>
 
 /// Create a copy of Machine
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = freezed,Object? host = null,Object? port = null,Object? useSsl = null,Object? connectionMode = null,Object? hasResolvedTransport = null,Object? hasApiKey = null,Object? lastConnected = freezed,Object? isFavorite = null,Object? sshEnabled = null,Object? sshUsername = freezed,Object? sshPort = null,Object? sshAuthType = null,Object? sshJumpHost = freezed,Object? sshJumpPort = null,Object? sshJumpUsername = freezed,Object? sshJumpAuthType = null,Object? hasCredentials = null,Object? hasJumpCredentials = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = freezed,Object? host = null,Object? port = null,Object? useSsl = null,Object? connectionMode = null,Object? hasResolvedTransport = null,Object? hasApiKey = null,Object? lastConnected = freezed,Object? isFavorite = null,Object? sshConfigAlias = freezed,Object? sshEnabled = null,Object? sshUsername = freezed,Object? sshPort = null,Object? sshAuthType = null,Object? sshJumpHost = freezed,Object? sshJumpPort = null,Object? sshJumpUsername = freezed,Object? sshJumpAuthType = null,Object? hasCredentials = null,Object? hasJumpCredentials = null,}) {
   return _then(Machine(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -388,7 +389,8 @@ as BridgeConnectionMode,hasResolvedTransport: null == hasResolvedTransport ? _se
 as bool,hasApiKey: null == hasApiKey ? _self.hasApiKey : hasApiKey // ignore: cast_nullable_to_non_nullable
 as bool,lastConnected: freezed == lastConnected ? _self.lastConnected : lastConnected // ignore: cast_nullable_to_non_nullable
 as DateTime?,isFavorite: null == isFavorite ? _self.isFavorite : isFavorite // ignore: cast_nullable_to_non_nullable
-as bool,sshEnabled: null == sshEnabled ? _self.sshEnabled : sshEnabled // ignore: cast_nullable_to_non_nullable
+as bool,sshConfigAlias: freezed == sshConfigAlias ? _self.sshConfigAlias : sshConfigAlias // ignore: cast_nullable_to_non_nullable
+as String?,sshEnabled: null == sshEnabled ? _self.sshEnabled : sshEnabled // ignore: cast_nullable_to_non_nullable
 as bool,sshUsername: freezed == sshUsername ? _self.sshUsername : sshUsername // ignore: cast_nullable_to_non_nullable
 as String?,sshPort: null == sshPort ? _self.sshPort : sshPort // ignore: cast_nullable_to_non_nullable
 as int,sshAuthType: null == sshAuthType ? _self.sshAuthType : sshAuthType // ignore: cast_nullable_to_non_nullable
@@ -483,10 +485,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? name,  String host,  int port,  bool useSsl,  BridgeConnectionMode connectionMode,  bool hasResolvedTransport,  bool hasApiKey,  DateTime? lastConnected,  bool isFavorite,  bool sshEnabled,  String? sshUsername,  int sshPort,  SshAuthType sshAuthType,  String? sshJumpHost,  int sshJumpPort,  String? sshJumpUsername,  SshAuthType sshJumpAuthType,  bool hasCredentials,  bool hasJumpCredentials)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? name,  String host,  int port,  bool useSsl,  BridgeConnectionMode connectionMode,  bool hasResolvedTransport,  bool hasApiKey,  DateTime? lastConnected,  bool isFavorite,  String? sshConfigAlias,  bool sshEnabled,  String? sshUsername,  int sshPort,  SshAuthType sshAuthType,  String? sshJumpHost,  int sshJumpPort,  String? sshJumpUsername,  SshAuthType sshJumpAuthType,  bool hasCredentials,  bool hasJumpCredentials)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Machine() when $default != null:
-return $default(_that.id,_that.name,_that.host,_that.port,_that.useSsl,_that.connectionMode,_that.hasResolvedTransport,_that.hasApiKey,_that.lastConnected,_that.isFavorite,_that.sshEnabled,_that.sshUsername,_that.sshPort,_that.sshAuthType,_that.sshJumpHost,_that.sshJumpPort,_that.sshJumpUsername,_that.sshJumpAuthType,_that.hasCredentials,_that.hasJumpCredentials);case _:
+return $default(_that.id,_that.name,_that.host,_that.port,_that.useSsl,_that.connectionMode,_that.hasResolvedTransport,_that.hasApiKey,_that.lastConnected,_that.isFavorite,_that.sshConfigAlias,_that.sshEnabled,_that.sshUsername,_that.sshPort,_that.sshAuthType,_that.sshJumpHost,_that.sshJumpPort,_that.sshJumpUsername,_that.sshJumpAuthType,_that.hasCredentials,_that.hasJumpCredentials);case _:
   return orElse();
 
 }
@@ -504,10 +506,10 @@ return $default(_that.id,_that.name,_that.host,_that.port,_that.useSsl,_that.con
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? name,  String host,  int port,  bool useSsl,  BridgeConnectionMode connectionMode,  bool hasResolvedTransport,  bool hasApiKey,  DateTime? lastConnected,  bool isFavorite,  bool sshEnabled,  String? sshUsername,  int sshPort,  SshAuthType sshAuthType,  String? sshJumpHost,  int sshJumpPort,  String? sshJumpUsername,  SshAuthType sshJumpAuthType,  bool hasCredentials,  bool hasJumpCredentials)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? name,  String host,  int port,  bool useSsl,  BridgeConnectionMode connectionMode,  bool hasResolvedTransport,  bool hasApiKey,  DateTime? lastConnected,  bool isFavorite,  String? sshConfigAlias,  bool sshEnabled,  String? sshUsername,  int sshPort,  SshAuthType sshAuthType,  String? sshJumpHost,  int sshJumpPort,  String? sshJumpUsername,  SshAuthType sshJumpAuthType,  bool hasCredentials,  bool hasJumpCredentials)  $default,) {final _that = this;
 switch (_that) {
 case _Machine():
-return $default(_that.id,_that.name,_that.host,_that.port,_that.useSsl,_that.connectionMode,_that.hasResolvedTransport,_that.hasApiKey,_that.lastConnected,_that.isFavorite,_that.sshEnabled,_that.sshUsername,_that.sshPort,_that.sshAuthType,_that.sshJumpHost,_that.sshJumpPort,_that.sshJumpUsername,_that.sshJumpAuthType,_that.hasCredentials,_that.hasJumpCredentials);case _:
+return $default(_that.id,_that.name,_that.host,_that.port,_that.useSsl,_that.connectionMode,_that.hasResolvedTransport,_that.hasApiKey,_that.lastConnected,_that.isFavorite,_that.sshConfigAlias,_that.sshEnabled,_that.sshUsername,_that.sshPort,_that.sshAuthType,_that.sshJumpHost,_that.sshJumpPort,_that.sshJumpUsername,_that.sshJumpAuthType,_that.hasCredentials,_that.hasJumpCredentials);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -524,10 +526,10 @@ return $default(_that.id,_that.name,_that.host,_that.port,_that.useSsl,_that.con
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? name,  String host,  int port,  bool useSsl,  BridgeConnectionMode connectionMode,  bool hasResolvedTransport,  bool hasApiKey,  DateTime? lastConnected,  bool isFavorite,  bool sshEnabled,  String? sshUsername,  int sshPort,  SshAuthType sshAuthType,  String? sshJumpHost,  int sshJumpPort,  String? sshJumpUsername,  SshAuthType sshJumpAuthType,  bool hasCredentials,  bool hasJumpCredentials)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? name,  String host,  int port,  bool useSsl,  BridgeConnectionMode connectionMode,  bool hasResolvedTransport,  bool hasApiKey,  DateTime? lastConnected,  bool isFavorite,  String? sshConfigAlias,  bool sshEnabled,  String? sshUsername,  int sshPort,  SshAuthType sshAuthType,  String? sshJumpHost,  int sshJumpPort,  String? sshJumpUsername,  SshAuthType sshJumpAuthType,  bool hasCredentials,  bool hasJumpCredentials)?  $default,) {final _that = this;
 switch (_that) {
 case _Machine() when $default != null:
-return $default(_that.id,_that.name,_that.host,_that.port,_that.useSsl,_that.connectionMode,_that.hasResolvedTransport,_that.hasApiKey,_that.lastConnected,_that.isFavorite,_that.sshEnabled,_that.sshUsername,_that.sshPort,_that.sshAuthType,_that.sshJumpHost,_that.sshJumpPort,_that.sshJumpUsername,_that.sshJumpAuthType,_that.hasCredentials,_that.hasJumpCredentials);case _:
+return $default(_that.id,_that.name,_that.host,_that.port,_that.useSsl,_that.connectionMode,_that.hasResolvedTransport,_that.hasApiKey,_that.lastConnected,_that.isFavorite,_that.sshConfigAlias,_that.sshEnabled,_that.sshUsername,_that.sshPort,_that.sshAuthType,_that.sshJumpHost,_that.sshJumpPort,_that.sshJumpUsername,_that.sshJumpAuthType,_that.hasCredentials,_that.hasJumpCredentials);case _:
   return null;
 
 }
@@ -539,7 +541,7 @@ return $default(_that.id,_that.name,_that.host,_that.port,_that.useSsl,_that.con
 @JsonSerializable()
 
 class _Machine extends Machine {
-  const _Machine({required this.id, this.name, required this.host, this.port = 8765, this.useSsl = false, this.connectionMode = BridgeConnectionMode.automatic, this.hasResolvedTransport = false, this.hasApiKey = false, this.lastConnected, this.isFavorite = false, this.sshEnabled = false, this.sshUsername, this.sshPort = 22, this.sshAuthType = SshAuthType.password, this.sshJumpHost, this.sshJumpPort = 22, this.sshJumpUsername, this.sshJumpAuthType = SshAuthType.password, this.hasCredentials = false, this.hasJumpCredentials = false}): super._();
+  const _Machine({required this.id, this.name, required this.host, this.port = 8765, this.useSsl = false, this.connectionMode = BridgeConnectionMode.automatic, this.hasResolvedTransport = false, this.hasApiKey = false, this.lastConnected, this.isFavorite = false, this.sshConfigAlias, this.sshEnabled = false, this.sshUsername, this.sshPort = 22, this.sshAuthType = SshAuthType.password, this.sshJumpHost, this.sshJumpPort = 22, this.sshJumpUsername, this.sshJumpAuthType = SshAuthType.password, this.hasCredentials = false, this.hasJumpCredentials = false}): super._();
   factory _Machine.fromJson(Map<String, dynamic> json) => _$MachineFromJson(json);
 
 /// Unique identifier (UUID)
@@ -562,6 +564,8 @@ class _Machine extends Machine {
 @override final  DateTime? lastConnected;
 /// Whether this machine is pinned/favorited (shows at top)
 @override@JsonKey() final  bool isFavorite;
+/// Desktop OpenSSH host alias. Authentication and jump hosts use ~/.ssh/config.
+@override final  String? sshConfigAlias;
 /// Whether SSH remote startup is enabled
 @override@JsonKey() final  bool sshEnabled;
 /// SSH username
@@ -596,18 +600,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Machine&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.host, host) || other.host == host)&&(identical(other.port, port) || other.port == port)&&(identical(other.useSsl, useSsl) || other.useSsl == useSsl)&&(identical(other.connectionMode, connectionMode) || other.connectionMode == connectionMode)&&(identical(other.hasResolvedTransport, hasResolvedTransport) || other.hasResolvedTransport == hasResolvedTransport)&&(identical(other.hasApiKey, hasApiKey) || other.hasApiKey == hasApiKey)&&(identical(other.lastConnected, lastConnected) || other.lastConnected == lastConnected)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite)&&(identical(other.sshEnabled, sshEnabled) || other.sshEnabled == sshEnabled)&&(identical(other.sshUsername, sshUsername) || other.sshUsername == sshUsername)&&(identical(other.sshPort, sshPort) || other.sshPort == sshPort)&&(identical(other.sshAuthType, sshAuthType) || other.sshAuthType == sshAuthType)&&(identical(other.sshJumpHost, sshJumpHost) || other.sshJumpHost == sshJumpHost)&&(identical(other.sshJumpPort, sshJumpPort) || other.sshJumpPort == sshJumpPort)&&(identical(other.sshJumpUsername, sshJumpUsername) || other.sshJumpUsername == sshJumpUsername)&&(identical(other.sshJumpAuthType, sshJumpAuthType) || other.sshJumpAuthType == sshJumpAuthType)&&(identical(other.hasCredentials, hasCredentials) || other.hasCredentials == hasCredentials)&&(identical(other.hasJumpCredentials, hasJumpCredentials) || other.hasJumpCredentials == hasJumpCredentials));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Machine&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.host, host) || other.host == host)&&(identical(other.port, port) || other.port == port)&&(identical(other.useSsl, useSsl) || other.useSsl == useSsl)&&(identical(other.connectionMode, connectionMode) || other.connectionMode == connectionMode)&&(identical(other.hasResolvedTransport, hasResolvedTransport) || other.hasResolvedTransport == hasResolvedTransport)&&(identical(other.hasApiKey, hasApiKey) || other.hasApiKey == hasApiKey)&&(identical(other.lastConnected, lastConnected) || other.lastConnected == lastConnected)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite)&&(identical(other.sshConfigAlias, sshConfigAlias) || other.sshConfigAlias == sshConfigAlias)&&(identical(other.sshEnabled, sshEnabled) || other.sshEnabled == sshEnabled)&&(identical(other.sshUsername, sshUsername) || other.sshUsername == sshUsername)&&(identical(other.sshPort, sshPort) || other.sshPort == sshPort)&&(identical(other.sshAuthType, sshAuthType) || other.sshAuthType == sshAuthType)&&(identical(other.sshJumpHost, sshJumpHost) || other.sshJumpHost == sshJumpHost)&&(identical(other.sshJumpPort, sshJumpPort) || other.sshJumpPort == sshJumpPort)&&(identical(other.sshJumpUsername, sshJumpUsername) || other.sshJumpUsername == sshJumpUsername)&&(identical(other.sshJumpAuthType, sshJumpAuthType) || other.sshJumpAuthType == sshJumpAuthType)&&(identical(other.hasCredentials, hasCredentials) || other.hasCredentials == hasCredentials)&&(identical(other.hasJumpCredentials, hasJumpCredentials) || other.hasJumpCredentials == hasJumpCredentials));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hashAll([runtimeType,id,name,host,port,useSsl,connectionMode,hasResolvedTransport,hasApiKey,lastConnected,isFavorite,sshEnabled,sshUsername,sshPort,sshAuthType,sshJumpHost,sshJumpPort,sshJumpUsername,sshJumpAuthType,hasCredentials,hasJumpCredentials]);
+    return Object.hashAll([runtimeType,id,name,host,port,useSsl,connectionMode,hasResolvedTransport,hasApiKey,lastConnected,isFavorite,sshConfigAlias,sshEnabled,sshUsername,sshPort,sshAuthType,sshJumpHost,sshJumpPort,sshJumpUsername,sshJumpAuthType,hasCredentials,hasJumpCredentials]);
 }
 
 @override
 String toString() {
-    return 'Machine(id: $id, name: $name, host: $host, port: $port, useSsl: $useSsl, connectionMode: $connectionMode, hasResolvedTransport: $hasResolvedTransport, hasApiKey: $hasApiKey, lastConnected: $lastConnected, isFavorite: $isFavorite, sshEnabled: $sshEnabled, sshUsername: $sshUsername, sshPort: $sshPort, sshAuthType: $sshAuthType, sshJumpHost: $sshJumpHost, sshJumpPort: $sshJumpPort, sshJumpUsername: $sshJumpUsername, sshJumpAuthType: $sshJumpAuthType, hasCredentials: $hasCredentials, hasJumpCredentials: $hasJumpCredentials)';
+    return 'Machine(id: $id, name: $name, host: $host, port: $port, useSsl: $useSsl, connectionMode: $connectionMode, hasResolvedTransport: $hasResolvedTransport, hasApiKey: $hasApiKey, lastConnected: $lastConnected, isFavorite: $isFavorite, sshConfigAlias: $sshConfigAlias, sshEnabled: $sshEnabled, sshUsername: $sshUsername, sshPort: $sshPort, sshAuthType: $sshAuthType, sshJumpHost: $sshJumpHost, sshJumpPort: $sshJumpPort, sshJumpUsername: $sshJumpUsername, sshJumpAuthType: $sshJumpAuthType, hasCredentials: $hasCredentials, hasJumpCredentials: $hasJumpCredentials)';
 }
 
 
@@ -618,7 +622,7 @@ abstract mixin class _$MachineCopyWith<$Res> implements $MachineCopyWith<$Res> {
   factory _$MachineCopyWith(_Machine value, $Res Function(_Machine) _then) = __$MachineCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String? name, String host, int port, bool useSsl, BridgeConnectionMode connectionMode, bool hasResolvedTransport, bool hasApiKey, DateTime? lastConnected, bool isFavorite, bool sshEnabled, String? sshUsername, int sshPort, SshAuthType sshAuthType, String? sshJumpHost, int sshJumpPort, String? sshJumpUsername, SshAuthType sshJumpAuthType, bool hasCredentials, bool hasJumpCredentials
+ String id, String? name, String host, int port, bool useSsl, BridgeConnectionMode connectionMode, bool hasResolvedTransport, bool hasApiKey, DateTime? lastConnected, bool isFavorite, String? sshConfigAlias, bool sshEnabled, String? sshUsername, int sshPort, SshAuthType sshAuthType, String? sshJumpHost, int sshJumpPort, String? sshJumpUsername, SshAuthType sshJumpAuthType, bool hasCredentials, bool hasJumpCredentials
 });
 
 
@@ -635,7 +639,7 @@ class __$MachineCopyWithImpl<$Res>
 
 /// Create a copy of Machine
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = freezed,Object? host = null,Object? port = null,Object? useSsl = null,Object? connectionMode = null,Object? hasResolvedTransport = null,Object? hasApiKey = null,Object? lastConnected = freezed,Object? isFavorite = null,Object? sshEnabled = null,Object? sshUsername = freezed,Object? sshPort = null,Object? sshAuthType = null,Object? sshJumpHost = freezed,Object? sshJumpPort = null,Object? sshJumpUsername = freezed,Object? sshJumpAuthType = null,Object? hasCredentials = null,Object? hasJumpCredentials = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = freezed,Object? host = null,Object? port = null,Object? useSsl = null,Object? connectionMode = null,Object? hasResolvedTransport = null,Object? hasApiKey = null,Object? lastConnected = freezed,Object? isFavorite = null,Object? sshConfigAlias = freezed,Object? sshEnabled = null,Object? sshUsername = freezed,Object? sshPort = null,Object? sshAuthType = null,Object? sshJumpHost = freezed,Object? sshJumpPort = null,Object? sshJumpUsername = freezed,Object? sshJumpAuthType = null,Object? hasCredentials = null,Object? hasJumpCredentials = null,}) {
   return _then(_Machine(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -647,7 +651,8 @@ as BridgeConnectionMode,hasResolvedTransport: null == hasResolvedTransport ? _se
 as bool,hasApiKey: null == hasApiKey ? _self.hasApiKey : hasApiKey // ignore: cast_nullable_to_non_nullable
 as bool,lastConnected: freezed == lastConnected ? _self.lastConnected : lastConnected // ignore: cast_nullable_to_non_nullable
 as DateTime?,isFavorite: null == isFavorite ? _self.isFavorite : isFavorite // ignore: cast_nullable_to_non_nullable
-as bool,sshEnabled: null == sshEnabled ? _self.sshEnabled : sshEnabled // ignore: cast_nullable_to_non_nullable
+as bool,sshConfigAlias: freezed == sshConfigAlias ? _self.sshConfigAlias : sshConfigAlias // ignore: cast_nullable_to_non_nullable
+as String?,sshEnabled: null == sshEnabled ? _self.sshEnabled : sshEnabled // ignore: cast_nullable_to_non_nullable
 as bool,sshUsername: freezed == sshUsername ? _self.sshUsername : sshUsername // ignore: cast_nullable_to_non_nullable
 as String?,sshPort: null == sshPort ? _self.sshPort : sshPort // ignore: cast_nullable_to_non_nullable
 as int,sshAuthType: null == sshAuthType ? _self.sshAuthType : sshAuthType // ignore: cast_nullable_to_non_nullable

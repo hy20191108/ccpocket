@@ -6,6 +6,7 @@ import '../../../models/machine.dart';
 import '../../../services/ssh_startup_service.dart';
 import '../../../theme/app_theme.dart';
 import '../../../utils/network_endpoint.dart';
+import '../../../utils/platform_helper.dart';
 import 'web_ssh_connection_settings.dart';
 
 /// Bottom sheet for adding or editing a remote machine configuration.
@@ -99,6 +100,7 @@ class _MachineEditSheetState extends State<MachineEditSheet> {
   late final TextEditingController _sshPrivateKeyController;
   BridgeConnectionMode _connectionMode = BridgeConnectionMode.automatic;
   bool _sshEnabled = false;
+  bool _openSshEnabled = false;
   bool _sshJumpEnabled = false;
   SshAuthType _sshAuthType = SshAuthType.password;
   SshAuthType _sshJumpAuthType = SshAuthType.password;
@@ -165,6 +167,8 @@ class _MachineEditSheetState extends State<MachineEditSheet> {
     _sshPrivateKeyController = TextEditingController();
 
     if (m != null) {
+      _openSshEnabled = m.sshConfigAlias?.isNotEmpty == true;
+      if (_openSshEnabled) _hostController.text = m.sshConfigAlias!;
       _connectionMode = m.connectionMode;
       _sshEnabled = m.sshEnabled;
       _sshJumpEnabled = _hasSavedJumpHostConfiguration;
@@ -198,7 +202,10 @@ class _MachineEditSheetState extends State<MachineEditSheet> {
 
   bool get _isValid {
     // Name is now optional (will display host:port if not set)
-    return _hostController.text.isNotEmpty;
+    return _hostController.text.isNotEmpty &&
+        (!_openSshEnabled ||
+            RegExp(r'^[A-Za-z0-9_][A-Za-z0-9_.-]*$')
+                .hasMatch(_hostController.text.trim()));
   }
 
   bool get _sshConfigValid {
@@ -291,9 +298,10 @@ class _MachineEditSheetState extends State<MachineEditSheet> {
       final host = normalizeHostInput(_hostController.text);
       final port = int.tryParse(_portController.text) ?? 8765;
       final usesSshTunnel =
+          _openSshEnabled ||
           _sshEnabled &&
-          _sshJumpEnabled &&
-          _sshJumpHostController.text.trim().isNotEmpty;
+              _sshJumpEnabled &&
+              _sshJumpHostController.text.trim().isNotEmpty;
       final useSsl = switch (_connectionMode) {
         BridgeConnectionMode.automatic =>
           usesSshTunnel ? false : existing?.useSsl ?? false,
@@ -321,6 +329,7 @@ class _MachineEditSheetState extends State<MachineEditSheet> {
         lastConnected: existing?.lastConnected,
         isFavorite: existing?.isFavorite ?? false,
         sshEnabled: _sshEnabled,
+        sshConfigAlias: _openSshEnabled ? host : null,
         sshUsername: _sshEnabled ? _sshUsernameController.text.trim() : null,
         sshPort: int.tryParse(_sshPortController.text) ?? 22,
         sshAuthType: _sshAuthType,
@@ -503,7 +512,9 @@ class _MachineEditSheetState extends State<MachineEditSheet> {
                         controller: _hostController,
                         scrollPadding: _fieldScrollPadding(context),
                         decoration: InputDecoration(
-                          labelText: l.machineEditHostLabel,
+                          labelText: _openSshEnabled
+                              ? l.webSshAlias
+                              : l.machineEditHostLabel,
                           hintText: l.machineEditHostHint,
                           prefixIcon: const Icon(Icons.computer),
                           border: OutlineInputBorder(),
@@ -546,7 +557,8 @@ class _MachineEditSheetState extends State<MachineEditSheet> {
 
                       _ConnectionModeField(
                         value: _connectionMode,
-                        usesSshTunnel: _sshEnabled && _sshJumpEnabled,
+                        usesSshTunnel:
+                            _openSshEnabled || (_sshEnabled && _sshJumpEnabled),
                         onChanged: (value) =>
                             setState(() => _connectionMode = value),
                       ),
@@ -559,36 +571,58 @@ class _MachineEditSheetState extends State<MachineEditSheet> {
 
                       if (kIsWeb)
                         const WebSshConnectionSettings()
-                      else
-                        _TileCard(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SwitchListTile(
-                                title: Text(
-                                  l.machineEditEnableSshRemoteStartup,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  l.machineEditEnableSshRemoteStartupSubtitle,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                                value: _sshEnabled,
-                                onChanged: (v) =>
-                                    setState(() => _sshEnabled = v),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                              ),
-                            ],
+                      else ...[
+                        if (isDesktopPlatform &&
+                            (!_sshEnabled || _openSshEnabled)) ...[
+                          _TileCard(
+                            child: SwitchListTile(
+                              key: const ValueKey('desktop_open_ssh_toggle'),
+                              title: Text(l.desktopOpenSshConnection),
+                              subtitle: Text(l.webSshDescription),
+                              value: _openSshEnabled,
+                              onChanged: (enabled) => setState(() {
+                                _openSshEnabled = enabled;
+                                if (enabled) {
+                                  _sshEnabled = false;
+                                  _connectionMode =
+                                      BridgeConnectionMode.automatic;
+                                }
+                              }),
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: 12),
+                        ],
+                        if (!_openSshEnabled)
+                          _TileCard(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SwitchListTile(
+                                  title: Text(
+                                    l.machineEditEnableSshRemoteStartup,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    l.machineEditEnableSshRemoteStartupSubtitle,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                  value: _sshEnabled,
+                                  onChanged: (v) =>
+                                      setState(() => _sshEnabled = v),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
 
-                      if (_sshEnabled && !kIsWeb) ...[
+                      if (_sshEnabled && !kIsWeb && !_openSshEnabled) ...[
                         const SizedBox(height: 12),
 
                         Row(

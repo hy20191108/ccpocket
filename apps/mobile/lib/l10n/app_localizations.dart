@@ -7144,6 +7144,12 @@ abstract class AppLocalizations {
   /// In ja, this message translates to:
   /// **'SSH接続に失敗しました．この端末の接続先とSSH認証を確認してください．'**
   String get webSshConnectionFailed;
+
+  /// No description provided for @desktopOpenSshConnection.
+  ///
+  /// In ja, this message translates to:
+  /// **'OpenSSHで接続'**
+  String get desktopOpenSshConnection;
 }
 
 class _AppLocalizationsDelegate
